@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const tempMovieData = [
   {
@@ -96,42 +96,6 @@ function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
-function Box({ children }) {
-  const [isOpen, setIsOpen] = useState(true);
-  return (
-    <div className="box">
-      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
-        {isOpen ? "–" : "+"}
-      </button>
-      {isOpen && children}
-    </div>
-  );
-}
-
-/*
-function WatchedBox() {
-  const [isOpen2, setIsOpen2] = useState(true);
-  const [watched, setWatched] = useState(tempWatchedData);
-
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
-        </>
-      )}
-    </div>
-  );
-}
-*/
-
 function MovieList({ movies }) {
   return (
     <ul className="list">
@@ -154,6 +118,18 @@ function Movie({ movie }) {
         </p>
       </div>
     </li>
+  );
+}
+
+function Box({ children }) {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div className="box">
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+        {isOpen ? "–" : "+"}
+      </button>
+      {isOpen && children}
+    </div>
   );
 }
 
@@ -220,9 +196,24 @@ function WatchedMovie({ movie }) {
   );
 }
 
+const KEY = "abd4a3e5";
+
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
+  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
+  const query = "interstellar";
+
+  useEffect(function () {
+    async function fetchMovies() {
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+      console.log(data.Search);
+    }
+    fetchMovies();
+  }, []);
 
   return (
     <>
